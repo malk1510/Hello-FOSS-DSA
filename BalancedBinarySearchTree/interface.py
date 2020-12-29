@@ -3,35 +3,54 @@ class Node:
 		self.data = data
 		self.right = None
 		self.left = None
+		self.height = 0
 
 class BalancedBinarySearchTree:
 	def __init__(self):
 		self.root = None
 		raise NotImplementedError
-
-	def insert(self, number):
-		if not self.root:
-			self.root = Node(number)
-			return self.root
-		currentNode = self.root
-		while True:
-			if number>currentNode.data:
-				if currentNode.right:
-					currentNode = currentNode.right
-				else:
-					currentNode.right = Node(number)
-					return self.root
+	
+	def right_rotate(self, root):
+		node = root.left
+		root.left = node.right
+		node.right = root
+		return node
+	
+	def left_rotate(self, root):
+		node = root.right
+		root.right = node.left
+		node.left = root
+		return node
+	def insert(self, number, root = self.root):
+		if root.data<number:
+			if root.right:
+				root.right = self.insert(number,root.right)
 			else:
-				if currentNode.left:
-					currentNode = currentNode.left
-				else:
-					currentNode.left = Node(number)
-					return self.root
-		return self.root
-		raise NotImplementedError
+				root.right = Node(number)
+		else:
+			if root.left:
+				root.left = self.insert(number,root.left)
+			else:
+				root.left = Node(number)
+		root.height+=1
+		h_l = root.left.height if root.left else -1
+		h_r = root.right.height if root.right else -1
+		if abs(h_r-h_l)<2:
+			return root
+		if h_r>h_l:
+			node = root.right
+			if (not node.right or node.right.height<node.left.height):
+				root.right = self.right_rotate(node)
+			root = self.left_rotate(root)
+		else:
+			node = root.left
+			if (not node.left or node.left.height<node.right.height):
+				root.left = self.left_rotate(node)
+			root = self.right_rotate(root)
+		return root
 
 	def remove(self, number):
-		#remove number from BST
+		
 		raise NotImplementedError
 
 	def greater_than_equal(self, number):
